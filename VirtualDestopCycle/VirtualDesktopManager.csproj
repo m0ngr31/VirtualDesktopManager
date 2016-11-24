@@ -71,7 +71,8 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>Resources\mainIco.ico</ApplicationIcon>
+    <ApplicationIcon>
+    </ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup />
   <PropertyGroup />
@@ -141,37 +142,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\9plus.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\1.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\2.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\3.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\4.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\5.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\6.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\7.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\8.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\9.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Resources\mainIco.ico" />
     <None Include="Resources\mainIco.png" />
   </ItemGroup>
   <ItemGroup>
