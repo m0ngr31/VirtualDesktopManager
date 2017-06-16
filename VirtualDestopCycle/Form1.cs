@@ -34,6 +34,8 @@ namespace VirtualDesktopManager
 
         private bool useAltKeySettings;
 
+        private int previousDesktopIndex;
+
         public Form1()
         {
             InitializeComponent();
@@ -82,7 +84,8 @@ namespace VirtualDesktopManager
             {
                 return;
             }
-                
+
+            previousDesktopIndex = currentDesktopIndex;
             desktops.ElementAt(index)?.Switch();            
         }
 
@@ -287,6 +290,8 @@ namespace VirtualDesktopManager
 
         void RightKeyManagerPressed(object sender, KeyPressedEventArgs e)
         {
+            previousDesktopIndex = getCurrentDesktopIndex();
+
             var desktop = initialDesktopState();
             
             if(desktop.GetRight() != null)
@@ -300,6 +305,8 @@ namespace VirtualDesktopManager
 
         void LeftKeyManagerPressed(object sender, KeyPressedEventArgs e)
         {
+            previousDesktopIndex = getCurrentDesktopIndex();
+
             var desktop = initialDesktopState();
 
             if (desktop.GetLeft() != null)
@@ -326,9 +333,33 @@ namespace VirtualDesktopManager
 
         private void notifyIcon1_DoubleClick(object sender, EventArgs e)
         {
-            openSettings();
+   
         }
+   private void notifyIcon1_Click(object sender, EventArgs e)
+        {
+            var currentDesktopIndex = getCurrentDesktopIndex();
 
+            MouseEventArgs me = (MouseEventArgs)e;
+
+            if (me.Button == MouseButtons.Left)
+            {
+                if ( previousDesktopIndex > desktops.Count -1 )
+                {
+                    previousDesktopIndex = desktops.Count - 1;
+                    
+                    if (previousDesktopIndex == currentDesktopIndex)
+                    {
+                        previousDesktopIndex = 0;
+                    }
+                }
+                if (previousDesktopIndex != currentDesktopIndex)
+                {
+                    desktops.ElementAt(previousDesktopIndex)?.Switch();
+                    previousDesktopIndex = currentDesktopIndex;
+                }
+            }
+        }
+            
         private void upButton_Click(object sender, EventArgs e)
         {
             try

@@ -57,6 +57,7 @@
             this.notifyIcon1.Text = "Virtual Desktop Manager";
             this.notifyIcon1.Visible = true;
             this.notifyIcon1.DoubleClick += new System.EventHandler(this.notifyIcon1_DoubleClick);
+            this.notifyIcon1.Click += new System.EventHandler(this.notifyIcon1_Click);
             // 
             // contextMenuStrip1
             // 
