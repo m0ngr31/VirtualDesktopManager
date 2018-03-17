@@ -236,20 +236,25 @@ namespace VirtualDesktopManager
 
         private void VirtualDesktop_CurrentChanged(object sender, VirtualDesktopChangedEventArgs e)
         {
-            // 0 == first
-            int currentDesktopIndex = getCurrentDesktopIndex();
+			RefreshCurrentDesktop();
+        }
 
-            string pictureFile = PickNthFile(currentDesktopIndex);
-            if (pictureFile != null)
-            {
-                Native.SetBackground(pictureFile);
-            }
+		private void RefreshCurrentDesktop()
+		{
+			// 0 == first
+			int currentDesktopIndex = getCurrentDesktopIndex();
 
-            restoreApplicationFocus(currentDesktopIndex);
-            changeTrayIcon(currentDesktopIndex);
+			string pictureFile = PickNthFile(currentDesktopIndex);
+			if (pictureFile != null)
+			{
+				Native.SetBackground(pictureFile);
+			}
+
+			restoreApplicationFocus(currentDesktopIndex);
+			changeTrayIcon(currentDesktopIndex);
 			if (Preferences.Count > currentDesktopIndex)
 				notifyIcon1.Text = Preferences[currentDesktopIndex].Name ?? $"Desktop {currentDesktopIndex + 1}";
-        }
+		}
 
         private string PickNthFile(int currentDesktopIndex)
         {
@@ -562,6 +567,8 @@ namespace VirtualDesktopManager
 			saved = true;
 			RefreshListView();
 			RefreshDetails();
+
+			RefreshCurrentDesktop();
             //labelStatus.Text = "Changes were successful.";
         }
 
@@ -638,6 +645,7 @@ namespace VirtualDesktopManager
 				pictureBox.ImageLocation = path;
 				saved = false;
 				saveButton.Enabled = true;
+				clearButton.Enabled = true;
 			}
 		}
 
@@ -649,6 +657,13 @@ namespace VirtualDesktopManager
 
 		private void checkBox1_CheckedChanged(object sender, EventArgs e)
 		{
+			saved = false;
+			saveButton.Enabled = true;
+		}
+
+		private void clearButton_Click(object sender, EventArgs e)
+		{
+			pictureBox.ImageLocation = null;
 			saved = false;
 			saveButton.Enabled = true;
 		}

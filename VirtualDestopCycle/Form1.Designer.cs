@@ -36,6 +36,7 @@
 			this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.checkBox1 = new System.Windows.Forms.CheckBox();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.removeButton = new System.Windows.Forms.Button();
 			this.downButton = new System.Windows.Forms.Button();
 			this.upButton = new System.Windows.Forms.Button();
 			this.listView1 = new System.Windows.Forms.ListView();
@@ -43,15 +44,14 @@
 			this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
 			this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+			this.addFileButton = new System.Windows.Forms.Button();
 			this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
 			this.detailsGroup = new System.Windows.Forms.GroupBox();
-			this.addFileButton = new System.Windows.Forms.Button();
-			this.removeButton = new System.Windows.Forms.Button();
-			this.nameBox = new System.Windows.Forms.TextBox();
-			this.pictureBox = new System.Windows.Forms.PictureBox();
-			this.saveButton = new System.Windows.Forms.Button();
-			this.browseButton = new System.Windows.Forms.Button();
 			this.clearButton = new System.Windows.Forms.Button();
+			this.browseButton = new System.Windows.Forms.Button();
+			this.saveButton = new System.Windows.Forms.Button();
+			this.pictureBox = new System.Windows.Forms.PictureBox();
+			this.nameBox = new System.Windows.Forms.TextBox();
 			this.contextMenuStrip1.SuspendLayout();
 			this.groupBox1.SuspendLayout();
 			this.detailsGroup.SuspendLayout();
@@ -125,6 +125,22 @@
 			this.groupBox1.TabIndex = 3;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Desktops";
+			// 
+			// removeButton
+			// 
+			this.removeButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.removeButton.BackColor = System.Drawing.Color.Black;
+			this.removeButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.removeButton.Font = new System.Drawing.Font("Segoe UI", 12F);
+			this.removeButton.ForeColor = System.Drawing.Color.White;
+			this.removeButton.Location = new System.Drawing.Point(181, 282);
+			this.removeButton.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
+			this.removeButton.Name = "removeButton";
+			this.removeButton.Size = new System.Drawing.Size(144, 37);
+			this.removeButton.TabIndex = 7;
+			this.removeButton.Text = "Remove";
+			this.removeButton.UseVisualStyleBackColor = false;
+			this.removeButton.Click += new System.EventHandler(this.removeButton_Click);
 			// 
 			// downButton
 			// 
@@ -201,6 +217,22 @@
 			this.columnHeader4.Text = "Image";
 			this.columnHeader4.Width = 160;
 			// 
+			// addFileButton
+			// 
+			this.addFileButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+			this.addFileButton.BackColor = System.Drawing.Color.Black;
+			this.addFileButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.addFileButton.Font = new System.Drawing.Font("Segoe UI", 12F);
+			this.addFileButton.ForeColor = System.Drawing.Color.White;
+			this.addFileButton.Location = new System.Drawing.Point(14, 282);
+			this.addFileButton.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
+			this.addFileButton.Name = "addFileButton";
+			this.addFileButton.Size = new System.Drawing.Size(163, 37);
+			this.addFileButton.TabIndex = 3;
+			this.addFileButton.Text = "Add background";
+			this.addFileButton.UseVisualStyleBackColor = false;
+			this.addFileButton.Click += new System.EventHandler(this.addFileButton_Click);
+			// 
 			// openFileDialog1
 			// 
 			this.openFileDialog1.FileName = "openFileDialog1";
@@ -222,67 +254,18 @@
 			this.detailsGroup.TabStop = false;
 			this.detailsGroup.Text = "Details";
 			// 
-			// addFileButton
+			// clearButton
 			// 
-			this.addFileButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.addFileButton.BackColor = System.Drawing.Color.Black;
-			this.addFileButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.addFileButton.Font = new System.Drawing.Font("Segoe UI", 12F);
-			this.addFileButton.ForeColor = System.Drawing.Color.White;
-			this.addFileButton.Location = new System.Drawing.Point(14, 282);
-			this.addFileButton.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
-			this.addFileButton.Name = "addFileButton";
-			this.addFileButton.Size = new System.Drawing.Size(163, 37);
-			this.addFileButton.TabIndex = 3;
-			this.addFileButton.Text = "Add background";
-			this.addFileButton.UseVisualStyleBackColor = false;
-			this.addFileButton.Click += new System.EventHandler(this.addFileButton_Click);
-			// 
-			// removeButton
-			// 
-			this.removeButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.removeButton.BackColor = System.Drawing.Color.Black;
-			this.removeButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.removeButton.Font = new System.Drawing.Font("Segoe UI", 12F);
-			this.removeButton.ForeColor = System.Drawing.Color.White;
-			this.removeButton.Location = new System.Drawing.Point(181, 282);
-			this.removeButton.Margin = new System.Windows.Forms.Padding(2, 3, 2, 3);
-			this.removeButton.Name = "removeButton";
-			this.removeButton.Size = new System.Drawing.Size(144, 37);
-			this.removeButton.TabIndex = 7;
-			this.removeButton.Text = "Remove";
-			this.removeButton.UseVisualStyleBackColor = false;
-			this.removeButton.Click += new System.EventHandler(this.removeButton_Click);
-			// 
-			// nameBox
-			// 
-			this.nameBox.Location = new System.Drawing.Point(14, 48);
-			this.nameBox.Name = "nameBox";
-			this.nameBox.Size = new System.Drawing.Size(363, 49);
-			this.nameBox.TabIndex = 0;
-			this.nameBox.TextChanged += new System.EventHandler(this.nameBox_TextChanged);
-			// 
-			// pictureBox
-			// 
-			this.pictureBox.Location = new System.Drawing.Point(383, 48);
-			this.pictureBox.Name = "pictureBox";
-			this.pictureBox.Size = new System.Drawing.Size(194, 139);
-			this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-			this.pictureBox.TabIndex = 1;
-			this.pictureBox.TabStop = false;
-			// 
-			// saveButton
-			// 
-			this.saveButton.BackColor = System.Drawing.Color.Black;
-			this.saveButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.saveButton.Font = new System.Drawing.Font("Segoe UI", 11.78182F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.saveButton.Location = new System.Drawing.Point(14, 150);
-			this.saveButton.Name = "saveButton";
-			this.saveButton.Size = new System.Drawing.Size(144, 37);
-			this.saveButton.TabIndex = 2;
-			this.saveButton.Text = "Save";
-			this.saveButton.UseVisualStyleBackColor = false;
-			this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
+			this.clearButton.BackColor = System.Drawing.Color.Black;
+			this.clearButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.clearButton.Font = new System.Drawing.Font("Segoe UI", 11.78182F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.clearButton.Location = new System.Drawing.Point(233, 103);
+			this.clearButton.Name = "clearButton";
+			this.clearButton.Size = new System.Drawing.Size(144, 37);
+			this.clearButton.TabIndex = 4;
+			this.clearButton.Text = "Clear Image";
+			this.clearButton.UseVisualStyleBackColor = false;
+			this.clearButton.Click += new System.EventHandler(this.clearButton_Click);
 			// 
 			// browseButton
 			// 
@@ -297,17 +280,35 @@
 			this.browseButton.UseVisualStyleBackColor = false;
 			this.browseButton.Click += new System.EventHandler(this.browseButton_Click);
 			// 
-			// clearButton
+			// saveButton
 			// 
-			this.clearButton.BackColor = System.Drawing.Color.Black;
-			this.clearButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
-			this.clearButton.Font = new System.Drawing.Font("Segoe UI", 11.78182F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.clearButton.Location = new System.Drawing.Point(233, 103);
-			this.clearButton.Name = "clearButton";
-			this.clearButton.Size = new System.Drawing.Size(144, 37);
-			this.clearButton.TabIndex = 4;
-			this.clearButton.Text = "Clear Image";
-			this.clearButton.UseVisualStyleBackColor = false;
+			this.saveButton.BackColor = System.Drawing.Color.Black;
+			this.saveButton.FlatStyle = System.Windows.Forms.FlatStyle.System;
+			this.saveButton.Font = new System.Drawing.Font("Segoe UI", 11.78182F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.saveButton.Location = new System.Drawing.Point(14, 150);
+			this.saveButton.Name = "saveButton";
+			this.saveButton.Size = new System.Drawing.Size(144, 37);
+			this.saveButton.TabIndex = 2;
+			this.saveButton.Text = "Save";
+			this.saveButton.UseVisualStyleBackColor = false;
+			this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
+			// 
+			// pictureBox
+			// 
+			this.pictureBox.Location = new System.Drawing.Point(383, 48);
+			this.pictureBox.Name = "pictureBox";
+			this.pictureBox.Size = new System.Drawing.Size(194, 139);
+			this.pictureBox.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+			this.pictureBox.TabIndex = 1;
+			this.pictureBox.TabStop = false;
+			// 
+			// nameBox
+			// 
+			this.nameBox.Location = new System.Drawing.Point(14, 48);
+			this.nameBox.Name = "nameBox";
+			this.nameBox.Size = new System.Drawing.Size(363, 49);
+			this.nameBox.TabIndex = 0;
+			this.nameBox.TextChanged += new System.EventHandler(this.nameBox_TextChanged);
 			// 
 			// Form1
 			// 
