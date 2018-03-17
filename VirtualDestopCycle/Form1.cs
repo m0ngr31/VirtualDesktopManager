@@ -21,6 +21,8 @@ namespace VirtualDesktopManager
         static extern bool SetForegroundWindow(IntPtr hWnd);
 
         private IList<VirtualDesktop> desktops;
+		private List<VirtualDesktopPreference> Preferences
+			= new List<VirtualDesktopPreference>();
         private IntPtr[] activePrograms;
 
         [DllImport("user32.dll", CharSet = CharSet.Auto)]
@@ -34,11 +36,53 @@ namespace VirtualDesktopManager
 
         private bool useAltKeySettings;
 
+		private bool saved = true;
+
+		private void LoadDesktopPreferences()
+		{
+			var prefPath = Path.Combine(AppContext.BaseDirectory, "preferences.json");
+			if (System.IO.File.Exists(prefPath))
+			{
+				string contents;
+				using (var stream = System.IO.File.OpenRead(prefPath))
+				{
+					using (StreamReader reader = new StreamReader(stream))
+					{
+						contents = reader.ReadToEnd();
+					}
+				}
+				Preferences = Newtonsoft.Json.JsonConvert.DeserializeObject<List<VirtualDesktopPreference>>(contents);
+				for (int i = 0; i < Preferences.Count; i++)
+				{
+					Preferences[i].VirtualDesktopId = desktops[i].Id;
+				}
+			}
+			else
+			{
+				Preferences = desktops.Select(desktop => new VirtualDesktopPreference() { VirtualDesktopId = desktop.Id }).ToList();
+			}
+		}
+
+		private void SaveDesktopPreferences()
+		{
+			var prefPath = Path.Combine(AppContext.BaseDirectory, "preferences.json");
+			using (var stream = System.IO.File.Create(prefPath))
+			{
+				using (var writer = new StreamWriter(stream))
+				{
+					writer.Write(Newtonsoft.Json.JsonConvert.SerializeObject(Preferences));
+				}
+			}
+		}
+
         public Form1()
         {
             InitializeComponent();
 
             handleChangedNumber();
+			LoadPreferences();
+			LoadDesktopPreferences();
+			RefreshListView();
 
             closeToTray = true;
 
@@ -60,13 +104,88 @@ namespace VirtualDesktopManager
             useAltKeySettings = Properties.Settings.Default.AltHotKey;
             checkBox1.Checked = useAltKeySettings;
 
-            listView1.Items.Clear();
-            listView1.Columns.Add("File").Width = 400;
-            foreach (var file in Properties.Settings.Default.DesktopBackgroundFiles)
-            {
-                listView1.Items.Add(NewListViewItem(file));
-            }
+            //listView1.Items.Clear();
+            //listView1.Columns.Add("File").Width = 400;
+            //foreach (var file in Properties.Settings.Default.DesktopBackgroundFiles)
+            //{
+            //    listView1.Items.Add(NewListViewItem(file));
+            //}
         }
+
+		private void RefreshListView()
+		{
+			for (int i = 0; i < Preferences.Count; i++)
+			{
+				var preference = Preferences[i];
+				var desktop = desktops[i];
+
+				string idStr = preference.VirtualDesktopId.ToString();
+				idStr = "..." + idStr.Substring(idStr.Length - 5);
+				string order = (i + 1).ToString();
+				string name = preference.Name ?? $"Desktop {order}";
+				string path = preference.Wallpaper;
+				path = path == null ? "not set" : Path.GetFileName(path);
+
+				ListViewItem item = null;
+				if (i < listView1.Items.Count)
+					item = listView1.Items[i];
+				if (item == null)
+				{
+					listView1.Items.Add(new ListViewItem(new string[]
+						{
+							order,
+							idStr,
+							name,
+							path
+						}));
+				}
+				else
+				{
+					var subs = item.SubItems;
+					if (subs[0].Text != order)
+						subs[0].Text = order;
+					if (subs[1].Text != idStr)
+						subs[1].Text = idStr;
+					if (subs[2].Text != name)
+						subs[2].Text = name;
+					if (subs[3].Text != path)
+						subs[3].Text = path;
+				}
+			}
+			while (Preferences.Count < listView1.Items.Count)
+			{
+				listView1.Items.RemoveAt(Preferences.Count);
+			}
+		}
+
+		private void RefreshDetails()
+		{
+			if (listView1.SelectedItems.Count != 1)
+			{
+				detailsGroup.Enabled = false;
+			}
+			else
+			{
+				detailsGroup.Enabled = true;
+				var selected = Preferences[listView1.SelectedIndices[0]];
+				saveButton.Enabled = !saved;
+				clearButton.Enabled = (selected.Wallpaper != null);
+				nameBox.Text = selected.Name ?? "";
+				pictureBox.ImageLocation = selected.Wallpaper;
+			}
+		}
+
+		private void LoadPreferences()
+		{
+			Preferences.Clear();
+			foreach (var desktop in desktops)
+			{
+				Preferences.Add(new VirtualDesktopPreference()
+				{
+					VirtualDesktopId = desktop.Id
+				});
+			}
+		}
 
         private void NumberHotkeyPressed(object sender, KeyPressedEventArgs e)
         {   
@@ -117,18 +236,25 @@ namespace VirtualDesktopManager
 
         private void VirtualDesktop_CurrentChanged(object sender, VirtualDesktopChangedEventArgs e)
         {
-            // 0 == first
-            int currentDesktopIndex = getCurrentDesktopIndex();
-
-            string pictureFile = PickNthFile(currentDesktopIndex);
-            if (pictureFile != null)
-            {
-                Native.SetBackground(pictureFile);
-            }
-
-            restoreApplicationFocus(currentDesktopIndex);
-            changeTrayIcon(currentDesktopIndex);
+			RefreshCurrentDesktop();
         }
+
+		private void RefreshCurrentDesktop()
+		{
+			// 0 == first
+			int currentDesktopIndex = getCurrentDesktopIndex();
+
+			string pictureFile = PickNthFile(currentDesktopIndex);
+			if (pictureFile != null)
+			{
+				Native.SetBackground(pictureFile);
+			}
+
+			restoreApplicationFocus(currentDesktopIndex);
+			changeTrayIcon(currentDesktopIndex);
+			if (Preferences.Count > currentDesktopIndex)
+				notifyIcon1.Text = Preferences[currentDesktopIndex].Name ?? $"Desktop {currentDesktopIndex + 1}";
+		}
 
         private string PickNthFile(int currentDesktopIndex)
         {
@@ -197,7 +323,7 @@ namespace VirtualDesktopManager
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            labelStatus.Text = "";
+            //labelStatus.Text = "";
 
             if (!useAltKeySettings)
                 normalHotkeys();
@@ -329,70 +455,63 @@ namespace VirtualDesktopManager
             openSettings();
         }
 
+		private void MoveSelectedItem(bool up)
+		{
+			int swap = 0;
+			try
+			{
+				if (listView1.SelectedItems.Count == 1)
+				{
+					int indx = listView1.SelectedIndices[0];
+					int totl = listView1.Items.Count;
+					var selected = Preferences[indx];
+
+					if (indx == 0 && up)
+					{
+						swap = totl - 1;
+					}
+					else if (indx == totl - 1 && !up)
+					{
+						swap = 0;
+					}
+					else
+					{
+						swap = indx + (up ? -1 : 1);
+					}
+
+					var name = selected.Name;
+					var wallpaper = selected.Wallpaper;
+
+					var other = Preferences[swap];
+					selected.Name = other.Name;
+					selected.Wallpaper = other.Wallpaper;
+					other.Name = name;
+					other.Wallpaper = wallpaper;
+				}
+				else
+				{
+					MessageBox.Show("You must select exactly one item to move it. Please select one item and try again.",
+						"Item Select", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+				}
+			}
+			catch (Exception) { }
+			finally
+			{
+				RefreshListView();
+				listView1.Items[swap].Selected = true;
+				listView1.Select();
+			}
+		}
+
         private void upButton_Click(object sender, EventArgs e)
         {
-            try
-            {
-                if (listView1.SelectedItems.Count > 0)
-                {
-                    ListViewItem selected = listView1.SelectedItems[0];
-                    int indx = selected.Index;
-                    int totl = listView1.Items.Count;
-
-                    if (indx == 0)
-                    {
-                        listView1.Items.Remove(selected);
-                        listView1.Items.Insert(totl - 1, selected);
-                    }
-                    else
-                    {
-                        listView1.Items.Remove(selected);
-                        listView1.Items.Insert(indx - 1, selected);
-                    }
-                }
-                else
-                {
-                    MessageBox.Show("You can only move one item at a time. Please select only one item and try again.",
-                        "Item Select", MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                }
-            }
-            catch (Exception ex)
-            {
-
-            }
+			MoveSelectedItem(true);
         }
 
         private void downButton_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (listView1.SelectedItems.Count > 0)
-                {
-                    ListViewItem selected = listView1.SelectedItems[0];
-                    int indx = selected.Index;
-                    int totl = listView1.Items.Count;
-
-                    if (indx == totl - 1)
-                    {
-                        listView1.Items.Remove(selected);
-                        listView1.Items.Insert(0, selected);
-                    }
-                    else
-                    {
-                        listView1.Items.Remove(selected);
-                        listView1.Items.Insert(indx + 1, selected);
-                    }
-                }
-                else
-                {
-                    MessageBox.Show("You can only move one item at a time. Please select only one item and try again.",
-                        "Item Select", MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                }
-            }
-            catch (Exception ex)
-            {
-            }
-        }
+		{
+			MoveSelectedItem(false);
+		}
 
         private void saveButton_Click(object sender, EventArgs e)
         {
@@ -412,32 +531,53 @@ namespace VirtualDesktopManager
                 Properties.Settings.Default.AltHotKey = false;
             }
 
+			if (listView1.SelectedItems.Count == 1)
+			{
+				int indx = listView1.SelectedIndices[0];
+				var preference = Preferences[indx];
+				var name = nameBox.Text;
+				if (name == "")
+					name = null;
+				preference.Name = name;
+				preference.Wallpaper = pictureBox.ImageLocation;
+			}
+
             Properties.Settings.Default.DesktopBackgroundFiles.Clear();
-            foreach (ListViewItem item in listView1.Items)
-            {
-                Properties.Settings.Default.DesktopBackgroundFiles.Add(item.Tag.ToString());
-            }
+			if (Preferences.Any(pref => pref.Wallpaper != null))
+			{
+				string wallpaper = null;
+				for (int i = 0; i < Preferences.Count; i++)
+				{
+					if (wallpaper == null)
+					{
+						var pref = Preferences[(Preferences.Count - i) % Preferences.Count];
+						wallpaper = pref.Wallpaper;
+					}
+				}
+				foreach (var pref in Preferences)
+				{
+					wallpaper = pref.Wallpaper ?? wallpaper;
+					Properties.Settings.Default.DesktopBackgroundFiles.Add(wallpaper);
+				}
+			}
 
             Properties.Settings.Default.Save();
-            labelStatus.Text = "Changes were successful.";
+			SaveDesktopPreferences();
+
+			saved = true;
+			RefreshListView();
+			RefreshDetails();
+
+			RefreshCurrentDesktop();
+            //labelStatus.Text = "Changes were successful.";
         }
 
         private void addFileButton_Click(object sender, EventArgs e)
         {
-            openFileDialog1.CheckFileExists = true;
-            openFileDialog1.CheckPathExists = true;
-            openFileDialog1.Filter = "Image Files(*.BMP;*.JPG;*.GIF)|*.BMP;*.JPG;*.GIF|All files (*.*)|*.*";
-            openFileDialog1.FilterIndex = 0;
-            openFileDialog1.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
-            openFileDialog1.Multiselect = true;
-            openFileDialog1.Title = "Select desktop background image";
-            if (openFileDialog1.ShowDialog(this) == DialogResult.OK)
-            {
-                foreach (string file in openFileDialog1.FileNames)
-                {
-                    listView1.Items.Add(NewListViewItem(file));
-                }
-            }
+			var desktop = VirtualDesktop.Create();
+			handleChangedNumber();
+			Preferences.Add(new VirtualDesktopPreference() { VirtualDesktopId = desktop.Id });
+			RefreshListView();
         }
 
         private static ListViewItem NewListViewItem(string file)
@@ -455,15 +595,77 @@ namespace VirtualDesktopManager
         {
             try
             {
-                if (listView1.SelectedItems.Count > 0)
+				if (listView1.Items.Count == 1)
+				{
+					MessageBox.Show("Can't remove the last desktop.",
+						"Item Select", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+				}
+                else if (listView1.SelectedItems.Count == 1)
                 {
-                    ListViewItem selected = listView1.SelectedItems[0];
-                    listView1.Items.Remove(selected);
-                }
-            }
+					var indx = listView1.SelectedIndices[0];
+					var desktop = desktops[indx];
+					Preferences.RemoveAt(indx);
+					desktop.Remove();
+					handleChangedNumber();
+					RefreshListView();
+				}
+				else
+				{
+					MessageBox.Show("You must select exactly one item to remove it. Please select one item and try again.",
+						"Item Select", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+				}
+			}
             catch (Exception ex)
             {
             }
         }
-    }
+
+		private void button1_Click(object sender, EventArgs e)
+		{
+			VirtualDesktop.Current.GetRight().Switch();
+		}
+
+		private void listView1_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			RefreshDetails();
+		}
+
+		private void browseButton_Click(object sender, EventArgs e)
+		{
+			openFileDialog1.CheckFileExists = true;
+			openFileDialog1.CheckPathExists = true;
+			openFileDialog1.Filter = "Image Files(*.BMP;*.JPG;*.GIF)|*.BMP;*.JPG;*.GIF|All files (*.*)|*.*";
+			openFileDialog1.FilterIndex = 0;
+			openFileDialog1.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures);
+			openFileDialog1.Multiselect = false;
+			openFileDialog1.Title = "Select desktop background image";
+			if (openFileDialog1.ShowDialog(this) == DialogResult.OK)
+			{
+				var path = openFileDialog1.FileName;
+				pictureBox.ImageLocation = path;
+				saved = false;
+				saveButton.Enabled = true;
+				clearButton.Enabled = true;
+			}
+		}
+
+		private void nameBox_TextChanged(object sender, EventArgs e)
+		{
+			saved = false;
+			saveButton.Enabled = true;
+		}
+
+		private void checkBox1_CheckedChanged(object sender, EventArgs e)
+		{
+			saved = false;
+			saveButton.Enabled = true;
+		}
+
+		private void clearButton_Click(object sender, EventArgs e)
+		{
+			pictureBox.ImageLocation = null;
+			saved = false;
+			saveButton.Enabled = true;
+		}
+	}
 }
