@@ -244,9 +244,9 @@ namespace VirtualDesktopManager
             var desktopNumber = currentDesktopIndex + 1;
             var desktopNumberString = desktopNumber.ToString();
 
-            var fontSize = 140;
-            var xPlacement = 100;
-            var yPlacement = 50;
+            var fontSize = 250;
+            var xPlacement = 0;
+            var yPlacement = 0;
 
             if(desktopNumber > 9 && desktopNumber < 100)
             {
@@ -261,7 +261,7 @@ namespace VirtualDesktopManager
             }
 
             Bitmap newIcon = Properties.Resources.mainIcoPng;
-            Font desktopNumberFont = new Font("Segoe UI", fontSize, FontStyle.Bold, GraphicsUnit.Pixel);
+            Font desktopNumberFont = new Font("Cascadia Mono", fontSize, FontStyle.Bold, GraphicsUnit.Pixel);
 
             var gr = Graphics.FromImage(newIcon);
             gr.DrawString(desktopNumberString, desktopNumberFont, Brushes.White, xPlacement, yPlacement);
